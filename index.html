@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PromptWriter 3000</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-shape shape-a" aria-hidden="true"></div>
+    <div class="background-shape shape-b" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <header class="hero">
+        <p class="kicker">PromptWriter 3000</p>
+        <h1>Structured Prompt Builder</h1>
+        <p class="hero-copy">
+          Build deterministic prompts from reusable controls, then copy with or without labels.
+        </p>
+      </header>
+
+      <section class="panel controls-panel">
+        <h2>Builder</h2>
+        <div class="grid two-col">
+          <label>
+            Role
+            <select id="role"></select>
+            <p id="roleDefinition" class="field-note">
+              Select a role to view its expert definition.
+            </p>
+          </label>
+
+          <label>
+            Target audience
+            <select id="audience"></select>
+          </label>
+
+          <label>
+            Platform
+            <select id="platform"></select>
+          </label>
+
+          <label>
+            Task type
+            <select id="taskType"></select>
+          </label>
+
+          <label>
+            Tone / voice
+            <select id="tone"></select>
+          </label>
+
+          <label>
+            Output format
+            <select id="outputFormat"></select>
+          </label>
+
+          <label>
+            Length
+            <div class="inline-group">
+              <select id="length"></select>
+              <input
+                id="customWordLimit"
+                type="number"
+                min="1"
+                placeholder="Word limit"
+                aria-label="Custom word limit"
+              />
+            </div>
+          </label>
+
+          <label>
+            Model profile
+            <select id="modelProfile"></select>
+          </label>
+
+          <fieldset>
+            <legend>Assumptions policy</legend>
+            <label class="radio-option">
+              <input type="radio" name="assumptionsPolicy" value="ask_first" checked />
+              Ask questions first
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="assumptionsPolicy" value="proceed_with_assumptions" />
+              Proceed with assumptions (label them)
+            </label>
+          </fieldset>
+        </div>
+
+        <div class="grid two-col checkbox-grid">
+          <fieldset>
+            <legend>Constraints pack (toggleable)</legend>
+            <label class="checkbox-option"><input type="checkbox" data-constraint="No fluff" /> No fluff</label>
+            <label class="checkbox-option"><input type="checkbox" data-constraint="No invented facts" /> No invented facts</label>
+            <label class="checkbox-option"
+              ><input type="checkbox" data-constraint="Ask clarifying questions if missing" /> Ask clarifying questions if missing</label
+            >
+            <label class="checkbox-option"><input type="checkbox" data-constraint="Cite sources" /> Cite sources</label>
+            <label class="checkbox-option"><input type="checkbox" data-constraint="Include assumptions" /> Include assumptions</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Quality checks</legend>
+            <label class="checkbox-option"
+              ><input type="checkbox" data-quality="Include a compliance checklist" /> Include a compliance checklist</label
+            >
+            <label class="checkbox-option"><input type="checkbox" data-quality="Return 2 variants" /> Return 2 variants</label>
+            <label class="checkbox-option"
+              ><input type="checkbox" data-quality="Self-critique then revise" /> Self-critique then revise</label
+            >
+          </fieldset>
+        </div>
+      </section>
+
+      <section class="panel inputs-panel">
+        <h2>Prompt Inputs</h2>
+        <div class="grid one-col">
+          <label>
+            Primary prompt (GOAL)
+            <textarea id="goal" rows="3" placeholder="Describe the main request."></textarea>
+          </label>
+
+          <label>
+            Context
+            <textarea id="context" rows="4" placeholder="Background, constraints, and situation."></textarea>
+          </label>
+
+          <label>
+            Must include (one item per line)
+            <textarea id="mustInclude" rows="4" placeholder="Facts, sections, required outputs..."></textarea>
+          </label>
+
+          <label>
+            Must avoid (one item per line)
+            <textarea id="mustAvoid" rows="4" placeholder="Disallowed content, style, errors..."></textarea>
+          </label>
+
+          <label>
+            Avoid categories preset
+            <select id="avoidWordsPreset"></select>
+            <p class="field-note">Presets apply category filters only.</p>
+          </label>
+
+          <label>
+            Avoid categories (one per line)
+            <textarea id="avoidWords" rows="3" placeholder="Content categories to exclude from output."></textarea>
+          </label>
+
+          <label>
+            Reference material
+            <textarea id="referenceMaterial" rows="4" placeholder="Paste source text, data, or notes."></textarea>
+          </label>
+
+          <label>
+            Success criteria (1-3 bullets, one per line)
+            <textarea id="successCriteria" rows="3" placeholder="How you will judge output quality."></textarea>
+          </label>
+
+          <label>
+            Negative prompt
+            <textarea id="negativePrompt" rows="3" placeholder="Anything the model should explicitly not do."></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel presets-panel">
+        <h2>Presets</h2>
+        <div class="grid two-col compact">
+          <label>
+            Built-in presets
+            <select id="builtInPreset"></select>
+          </label>
+          <button id="applyBuiltInPreset" class="secondary">Apply built-in preset</button>
+
+          <label>
+            Save current as preset
+            <input id="presetName" type="text" placeholder="e.g. My bug triage prompt" />
+          </label>
+          <button id="savePreset" class="secondary">Save preset</button>
+
+          <label>
+            Saved presets
+            <select id="savedPreset"></select>
+          </label>
+          <div class="button-row">
+            <button id="loadPreset" class="secondary">Load saved</button>
+            <button id="deletePreset" class="danger">Delete</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="output-header">
+          <h2>Final Prompt (Live Preview)</h2>
+          <div class="meter" id="meter">0 chars | 0 words | ~0 tokens</div>
+        </div>
+
+        <textarea id="assembledPrompt" rows="20" readonly></textarea>
+
+        <div class="button-row">
+          <button id="copyLabeled">Copy with labels</button>
+          <button id="copyUnlabeled" class="secondary">Copy without labels</button>
+        </div>
+      </section>
+    </main>
+
+    <template id="toastTemplate">
+      <div class="toast" role="status" aria-live="polite"></div>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
